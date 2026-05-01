@@ -21,12 +21,12 @@ defmodule Lockring do
   @type lock_ref :: {name, index}
   @type resource :: any
 
-  @table Application.get_env(:lockring, :ets_table, Lockring.Table)
+  @table Application.compile_env(:lockring, :ets_table, Lockring.Table)
 
-  @delay Application.get_env(:lockring, :spin_delay, 10)
+  @delay Application.compile_env(:lockring, :spin_delay, 10)
 
   @defaults [
-    size: Application.get_env(:lockring, :size, 1),
+    size: Application.compile_env(:lockring, :size, 1),
     timeout: 5000,
     wait_timeout: :infinity,
     fun_timeout: :infinity,

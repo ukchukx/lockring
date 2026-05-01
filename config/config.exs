@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 ## These configs are only useful for testing
 
