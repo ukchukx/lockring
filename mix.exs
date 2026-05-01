@@ -6,11 +6,12 @@ defmodule Lockring.MixProject do
       app: :lockring,
       version: "0.1.0",
       elixir: "~> 1.9",
+      elixirc_options: [warnings_as_errors: true],
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       package: package(),
       test_coverage: [tool: ExCoveralls],
-      dialyzer: [plt_add_deps: :apps_direct, ignore_warnings: ".dialyzer_ignore.exs"],
+      dialyzer: [plt_add_deps: :apps_direct, ignore_warnings: ".dialyzer_ignore.exs"]
     ]
   end
 

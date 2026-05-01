@@ -1,4 +1,5 @@
 # Lockring
+[![Build Status](https://img.shields.io/github/actions/workflow/status/ukchukx/lockring/ci.yml?branch=master)](https://github.com/ukchukx/lockring/actions) [![Hex.pm Version](https://img.shields.io/hexpm/v/lockring.svg)](https://hex.pm/packages/lockring) [![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://hexdocs.pm/lockring/)
 
 Lockring is a mutex library for BEAM languages.
 
