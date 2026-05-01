@@ -8,6 +8,7 @@ defmodule Lockring.MixProject do
       elixir: "~> 1.9",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
+      package: package(),
       test_coverage: [tool: ExCoveralls],
       dialyzer: [plt_add_deps: :apps_direct, ignore_warnings: ".dialyzer_ignore.exs"],
     ]
@@ -40,6 +41,18 @@ defmodule Lockring.MixProject do
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:ex_doc, ">= 0.40.1", only: :dev, runtime: false},
       {:excoveralls, "~> 0.18", only: :test}
+    ]
+  end
+
+  defp package do
+    [
+      description: "A mutex library for BEAM languages.",
+      licenses: ["MIT"],
+      maintainers: ["Uk Chukundah"],
+      links: %{
+        "Github" => "https://github.com/ukchukx/lockring"
+      },
+      files: ~w(config lib mix.exs .formatter.exs .dialyzer_ignore.exs README.md)
     ]
   end
 end
