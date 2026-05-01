@@ -340,7 +340,7 @@ defmodule Lockring do
 
       :fail ->
         if until == :infinity || now() < until do
-          if nil != @delay, do: Process.sleep(@delay)
+          Process.sleep(@delay)
           wait_for_lock_until(name, until, opts)
         else
           {:error, "wait_timeout reached"}

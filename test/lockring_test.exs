@@ -15,12 +15,12 @@ defmodule LockringTest do
     assert {:ok, lock_ref, _resource} = Lockring.lock(name)
     assert :fail = Lockring.lock(name)
     assert :ok = Lockring.release(lock_ref)
-    assert {:ok, lock_ref, _resource} = Lockring.lock(name)
+    assert {:ok, _lock_ref, _resource} = Lockring.lock(name)
   end
 
   test "locks are created on demand" do
     name = self()
-    assert {:ok, lock_ref, _resource} = Lockring.lock(name)
+    assert {:ok, _lock_ref, _resource} = Lockring.lock(name)
     assert :fail = Lockring.lock(name)
   end
 
