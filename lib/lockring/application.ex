@@ -18,7 +18,6 @@ defmodule Lockring.Application do
       {DynamicSupervisor, strategy: :one_for_one, name: Lockring.DynamicSupervisor}
     ]
 
-    opts = [strategy: :one_for_one, name: Lockring.Supervisor]
-    Supervisor.start_link(children, opts)
+    Supervisor.start_link(children, strategy: :one_for_one, name: Lockring.Supervisor)
   end
 end
