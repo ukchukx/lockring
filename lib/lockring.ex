@@ -68,7 +68,6 @@ defmodule Lockring do
   def new(name, opts \\ []) do
     size = :size |> config(opts)
 
-
     if insert_new({name, :size}, size) do
       debug("Creating Lockring pool #{inspect(name)} of size #{size}.")
 
@@ -192,25 +191,7 @@ defmodule Lockring do
   """
   @spec with_lock(name, (resource -> any), Keyword.t()) :: {:ok, any} | {:error, String.t()}
   def with_lock(name, fun, opts \\ []) do
-    timeout = :timeout |> config(opts)
-    wait_timeout = :wait_timeout |> config(opts)
-    fun_timeout = :fun_timeout |> config(opts)
-
-    actual_wait_timeout =
-      case {timeout, wait_timeout} do
-        {nil, _} -> wait_timeout
-        {:infinity, _} -> wait_timeout
-        {_, :infinity} -> timeout
-        {_, _} -> min(timeout, wait_timeout)
-      end
-
-    actual_wait_timeout =
-      if actual_wait_timeout == :infinity do
-        :infinity
-      else
-        max(0, actual_wait_timeout)
-      end
-
+    actual_wait_timeout = timeout(:wait_timeout, opts)
     start_time = now()
 
     case wait_for_lock(name, actual_wait_timeout, opts) do
@@ -226,23 +207,9 @@ defmodule Lockring do
             end)
 
           elapsed = now() - start_time
+          actual_fun_timeout = timeout(:fun_timeout, opts, elapsed)
 
-          actual_fun_timeout =
-            case {timeout, fun_timeout} do
-              {nil, _} -> fun_timeout
-              {:infinity, _} -> fun_timeout
-              {_, :infinity} -> timeout - elapsed
-              {_, _} -> min(timeout - elapsed, fun_timeout)
-            end
-
-          actual_fun_timeout =
-            if actual_fun_timeout == :infinity do
-              :infinity
-            else
-              max(0, actual_fun_timeout)
-            end
-
-          case Task.yield(task, max(0, actual_fun_timeout)) do
+          case Task.yield(task, actual_fun_timeout) do
             {:ok, {:task_error, e}} ->
               {:error, Exception.message(e)}
 
@@ -376,6 +343,23 @@ defmodule Lockring do
 
       other ->
         raise ArgumentError, "unknown value for :resource -- #{inspect(other)}"
+    end
+  end
+
+  defp timeout(key, opts, elapsed \\ 0) do
+    base_timeout = config(:timeout, opts)
+    specific_timeout = config(key, opts)
+
+    {base_timeout, specific_timeout}
+    |> case do
+      {nil, _} -> specific_timeout
+      {:infinity, _} -> specific_timeout
+      {_, :infinity} -> base_timeout - elapsed
+      {_, _} -> min(base_timeout - elapsed, specific_timeout)
+    end
+    |> case do
+      :infinity -> :infinity
+      t -> max(0, t)
     end
   end
 end
