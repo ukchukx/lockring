@@ -66,7 +66,7 @@ defmodule Lockring do
   """
   @spec new(name, Keyword.t()) :: :ok
   def new(name, opts \\ []) do
-    size = :size |> config(opts)
+    size = config(:size, opts)
 
     if insert_new({name, :size}, size) do
       debug("Creating Lockring pool #{inspect(name)} of size #{size}.")
@@ -144,8 +144,7 @@ defmodule Lockring do
   def release(lock_ref) do
     {name, index} = lock_ref
     debug("Released #{inspect(lock_ref)}")
-    locks(name) |> :atomics.put(index, 0)
-    :ok
+    name |> locks() |> :atomics.put(index, 0)
   end
 
   @doc ~S"""
@@ -230,15 +229,23 @@ defmodule Lockring do
     end
   end
 
-  #### Private stuff below here
-
   @doc false
-  def config(key, opts) do
-    opts[key] || Application.get_env(:lockring, key, @defaults[key])
+  def locks(name) do
+    lookup({name, :locks})
   end
 
   @doc false
-  def now do
+  def put_resource(name, index, resource) do
+    insert({name, :resource, index}, {:resource, resource})
+  end
+
+  #### Private stuff below here
+
+  defp config(key, opts) do
+    opts[key] || Application.get_env(:lockring, key, @defaults[key])
+  end
+
+  defp now do
     :erlang.monotonic_time(:millisecond)
   end
 
@@ -275,18 +282,8 @@ defmodule Lockring do
     end
   end
 
-  @doc false
-  def put_resource(name, index, resource) do
-    insert({name, :resource, index}, {:resource, resource})
-  end
-
   defp index(name) do
     lookup({name, :index})
-  end
-
-  @doc false
-  def locks(name) do
-    lookup({name, :locks})
   end
 
   defp size(name) do
