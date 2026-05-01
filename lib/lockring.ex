@@ -288,13 +288,6 @@ defmodule Lockring do
     :ets.insert(@table, {key, value})
   end
 
-  defp insert!(key, value) do
-    case insert(key, value) do
-      true -> true
-      false -> raise "insert! couldn't (key: #{inspect(key)}"
-    end
-  end
-
   defp insert_new(key, value) do
     :ets.insert_new(@table, {key, value})
   end
@@ -317,7 +310,7 @@ defmodule Lockring do
 
   @doc false
   def put_resource(name, index, resource) do
-    insert!({name, :resource, index}, {:resource, resource})
+    insert({name, :resource, index}, {:resource, resource})
   end
 
   defp index(name) do
