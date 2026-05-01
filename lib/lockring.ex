@@ -169,7 +169,7 @@ defmodule Lockring do
 
   @doc ~S"""
   Attempts to acquire a lock on a resource, If successful, executes
-  `fun.(resource)` and passes its return value in an `{:ok, value}` tuple.
+  `fun.(resource)` and returns its return value.
 
   During lock wait and the execution of `fun`, the *lowest* applicable
   timeout value will be used.
@@ -188,7 +188,7 @@ defmodule Lockring do
     `fun.(resource)`. Default `:infinity`.
     execution to finish.
   """
-  @spec with_lock(name, (resource -> any), Keyword.t()) :: {:ok, any} | {:error, String.t()}
+  @spec with_lock(name, (resource -> any), Keyword.t()) :: any() | {:error, String.t()}
   def with_lock(name, fun, opts \\ []) do
     actual_wait_timeout = timeout(:wait_timeout, opts)
     start_time = now()
@@ -213,7 +213,7 @@ defmodule Lockring do
               {:error, Exception.message(e)}
 
             {:ok, return_value} ->
-              {:ok, return_value}
+              return_value
 
             nil ->
               Task.shutdown(task)
