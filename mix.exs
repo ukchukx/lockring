@@ -4,7 +4,7 @@ defmodule Lockring.MixProject do
   def project do
     [
       app: :lockring,
-      version: "0.1.0",
+      version: "0.1.1",
       elixir: "~> 1.9",
       elixirc_options: [warnings_as_errors: true],
       start_permanent: Mix.env() == :prod,
