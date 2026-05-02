@@ -75,7 +75,7 @@ defmodule LockringTest do
   test "with_lock" do
     name = self()
     Lockring.new(name, size: 1, resource: fn name, index -> {name, index} end)
-    assert {name, 1} == Lockring.with_lock(name, fn res -> res end)
+    assert {name, 1} == Lockring.with_lock(name, fn res -> res end, pass_resource?: true)
   end
 
   test "with_lock wait_timeout" do

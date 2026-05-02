@@ -196,15 +196,7 @@ defmodule Lockring do
     case wait_for_lock(name, actual_wait_timeout, opts) do
       {:ok, lock_ref, resource} ->
         try do
-          task =
-            Task.async(fn ->
-              try do
-                fun.(resource)
-              rescue
-                e -> {:task_error, e}
-              end
-            end)
-
+          task = create_task(fun, resource, opts)
           elapsed = now() - start_time
           actual_fun_timeout = timeout(:fun_timeout, opts, elapsed)
 
@@ -247,6 +239,19 @@ defmodule Lockring do
 
   defp now do
     :erlang.monotonic_time(:millisecond)
+  end
+
+  defp create_task(fun, resource, opts) do
+    Task.async(fn ->
+      try do
+        case Keyword.get(opts, :pass_resource?, false) do
+          true -> fun.(resource)
+          false -> fun.()
+        end
+      rescue
+        e -> {:task_error, e}
+      end
+    end)
   end
 
   #### ETS helpers
