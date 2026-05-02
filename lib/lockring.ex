@@ -188,7 +188,7 @@ defmodule Lockring do
     `fun.(resource)`. Default `:infinity`.
     execution to finish.
   """
-  @spec with_lock(name, (resource -> any), Keyword.t()) :: any() | {:error, String.t()}
+  @spec with_lock(name, (resource -> any) | (-> any), Keyword.t()) :: any() | {:error, String.t()}
   def with_lock(name, fun, opts \\ []) do
     actual_wait_timeout = timeout(:wait_timeout, opts)
     start_time = now()
